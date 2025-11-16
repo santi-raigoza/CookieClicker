@@ -3,7 +3,7 @@ INCLUDE Irvine32.inc
 .data
     ; Game Variables
     cookieCount DWORD 0 ; Total Cookies
-    cookiePower DWORD 0 ; Cookies per Click
+    cookiePower DWORD 1 ; Cookies per Click
     cookiePowerPrice DWORD 10 ; Price for Upgrading Cookie Power
     autoCookie DWORD 0 ; Auto Cookies per Second
     autoCookiePrice DWORD 50 ; Price for Auto Cookie Generator
@@ -18,6 +18,10 @@ INCLUDE Irvine32.inc
 
 .code
 main PROC
+
+gameLoop:
+    call ClrScr
+
     ; Display total cookies
     mov edx, OFFSET cookieMsg
     call WriteString
@@ -58,6 +62,23 @@ main PROC
     call WriteString
     call Crlf
 
+    ; Read user input
+    call ReadChar
+
+    ; If user presses 'q' or 'Q', quit the game
+    cmp al, 'q'
+    je quitGame
+    cmp al, 'Q'
+    je quitGame
+
+    ; If user presses spacebar, add cookies
+    cmp al, ' '
+    jne gameLoop
+    mov eax, cookiePower
+    add cookieCount, eax
+    jmp gameLoop
+
+quitGame:
     exit
 
 main ENDP
