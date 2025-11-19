@@ -15,18 +15,28 @@ INCLUDE Irvine32.inc
     autoCookieMsg BYTE "Auto Cookies: ", 0
     autoCookiePriceMsg BYTE "[2] Buy Auto Cookie: ", 0
     controlMsg BYTE "[Spacebar] to add cookie, [Q] Quit Game", 0
+    
+    ; For clearing lines
+    clearLine BYTE "                                        ", 0
 
 .code
 main PROC
+    ; Clear screen once at the start
+    call ClrScr
 
 gameLoop:
-    call ClrScr
+    ; Move cursor to top-left (row 0, col 0)
+    mov dh, 0
+    mov dl, 0
+    call Gotoxy
 
     ; Display total cookies
     mov edx, OFFSET cookieMsg
     call WriteString
     mov eax, cookieCount
     call WriteDec
+    mov edx, OFFSET clearLine  ; Clear rest of line
+    call WriteString
     call Crlf
 
     ; Display cookie power
@@ -34,6 +44,8 @@ gameLoop:
     call WriteString
     mov eax, cookiePower
     call WriteDec
+    mov edx, OFFSET clearLine
+    call WriteString
     call Crlf
 
     ; Display cookie power upgrade price
@@ -41,6 +53,8 @@ gameLoop:
     call WriteString
     mov eax, cookiePowerPrice
     call WriteDec
+    mov edx, OFFSET clearLine
+    call WriteString
     call Crlf
 
     ; Display auto cookie count
@@ -48,6 +62,8 @@ gameLoop:
     call WriteString
     mov eax, autoCookie
     call WriteDec
+    mov edx, OFFSET clearLine
+    call WriteString
     call Crlf
 
     ; Display auto cookie price
@@ -55,6 +71,8 @@ gameLoop:
     call WriteString
     mov eax, autoCookiePrice
     call WriteDec
+    mov edx, OFFSET clearLine
+    call WriteString
     call Crlf
 
     ; Display control instructions
