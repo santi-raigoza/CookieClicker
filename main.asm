@@ -93,6 +93,10 @@ gameLoop:
     cmp al, '1'
     je buyCookiePower
 
+    ; If user presses '2', buy auto cookie
+    cmp al, '2'
+    je buyAutoCookie
+
     ; If user presses spacebar, add cookies
     cmp al, ' '
     jne gameLoop
@@ -117,6 +121,26 @@ buyCookiePower:
     mov eax, cookiePowerPrice
     shl eax, 1  ; Left shift by 1 = multiply by 2
     mov cookiePowerPrice, eax
+    
+    jmp gameLoop
+
+buyAutoCookie:
+    ; Check if user has enough cookies
+    mov eax, cookieCount
+    cmp eax, autoCookiePrice
+    jl gameLoop  ; Not enough cookies, go back to game loop
+    
+    ; Subtract the price from cookieCount
+    mov eax, autoCookiePrice
+    sub cookieCount, eax
+    
+    ; Add 5 to autoCookie
+    add autoCookie, 5
+    
+    ; Double the autoCookiePrice
+    mov eax, autoCookiePrice
+    shl eax, 1  ; Left shift by 1 = multiply by 2
+    mov autoCookiePrice, eax
     
     jmp gameLoop
 
