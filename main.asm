@@ -7,6 +7,11 @@ INCLUDE Irvine32.inc
     cookiePowerPrice DWORD 10 ; Price for Upgrading Cookie Power
     autoCookie DWORD 0 ; Auto Cookies per Second
     autoCookiePrice DWORD 50 ; Price for Auto Cookie Generator
+    
+    ; Timer Variables
+    lastTime DWORD 0 ; Last time auto cookies were added
+    currentTime DWORD 0 ; Current time
+    autoInterval DWORD 10000 ; 10 seconds in milliseconds
 
     ; Message Strings
     cookieMsg BYTE "Cookies: ", 0
@@ -23,8 +28,31 @@ INCLUDE Irvine32.inc
 main PROC
     ; Clear screen once at the start
     call ClrScr
+    
+    ; Initialize the timer with current time
+    call GetMseconds
+    mov lastTime, eax
 
 gameLoop:
+    ; Check if 10 seconds have passed
+    call GetMseconds
+    mov currentTime, eax
+    
+    ; Calculate time elapsed
+    mov eax, currentTime
+    sub eax, lastTime
+    cmp eax, autoInterval
+    jl skipAutoAdd  ; Less than 10 seconds, skip adding auto cookies
+    
+    ; Add auto cookies to total
+    mov eax, autoCookie
+    add cookieCount, eax
+    
+    ; Update lastTime
+    mov eax, currentTime
+    mov lastTime, eax
+
+skipAutoAdd:
     ; Move cursor to top-left (row 0, col 0)
     mov dh, 0
     mov dl, 0
@@ -80,8 +108,13 @@ gameLoop:
     call WriteString
     call Crlf
 
-    ; Read user input
-    call ReadChar
+    ; Small delay to prevent excessive CPU usage
+    mov eax, 50  ; 50ms delay
+    call Delay
+    
+    ; Use ReadKey (non-blocking) to check for key press
+    call ReadKey
+    jz gameLoop  ; Zero flag set = no key pressed, continue loop
 
     ; If user presses 'q' or 'Q', quit the game
     cmp al, 'q'
