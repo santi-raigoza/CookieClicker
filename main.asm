@@ -8,6 +8,7 @@ INCLUDE Irvine32.inc
     autoCookie DWORD 0 ; Auto Cookies per Second
     autoCookie1Price DWORD 50 ; Price for Auto Cookie Generator 1
     autoCookie2Price DWORD 100 ; Price for Auto Cookie Generator 2
+    autoCookie3Price DWORD 150 ; Price for Auto Cookie Generator 3
     
     ; Timer Variables
     lastTime DWORD 0 ; Last time auto cookies were added
@@ -24,6 +25,7 @@ INCLUDE Irvine32.inc
     autoCookieMsg BYTE "Auto Cookies: ", 0
     autoCookie1PriceMsg BYTE "[2] Buy Auto Cookie 1 (+5): ", 0
     autoCookie2PriceMsg BYTE "[3] Buy Auto Cookie 2 (+10): ", 0
+    autoCookie3PriceMsg BYTE "[4] Buy Auto Cookie 3 (+15): ", 0
     controlMsg BYTE "[Spacebar] to add cookie, [Q] Quit Game", 0
     
     ; For clearing lines
@@ -127,6 +129,15 @@ skipAutoAdd:
     call WriteString
     call Crlf
 
+    ; Display auto cookie 3 price
+    mov edx, OFFSET autoCookie3PriceMsg
+    call WriteString
+    mov eax, autoCookie3Price
+    call WriteDec
+    mov edx, OFFSET clearLine
+    call WriteString
+    call Crlf
+
     ; Display control instructions
     mov edx, OFFSET controlMsg
     call WriteString
@@ -161,6 +172,10 @@ skipDisplay:
     ; If user presses '3', buy auto cookie 2
     cmp al, '3'
     je buyAutoCookie2
+
+    ; If user presses '4', buy auto cookie 3
+    cmp al, '4'
+    je buyAutoCookie3
 
     ; If user presses spacebar, add cookies
     cmp al, ' '
@@ -233,6 +248,29 @@ buyAutoCookie2:
     mov eax, autoCookie2Price
     shl eax, 1  ; Left shift by 1 = multiply by 2
     mov autoCookie2Price, eax
+    
+    ; Mark for redraw
+    mov needsRedraw, 1
+    
+    jmp gameLoop
+
+buyAutoCookie3:
+    ; Check if user has enough cookies
+    mov eax, cookieCount
+    cmp eax, autoCookie3Price
+    jl gameLoop  ; Not enough cookies, go back to game loop
+    
+    ; Subtract the price from cookieCount
+    mov eax, autoCookie3Price
+    sub cookieCount, eax
+    
+    ; Add 15 to autoCookie
+    add autoCookie, 15
+    
+    ; Double the autoCookie3Price
+    mov eax, autoCookie3Price
+    shl eax, 1  ; Left shift by 1 = multiply by 2
+    mov autoCookie3Price, eax
     
     ; Mark for redraw
     mov needsRedraw, 1
