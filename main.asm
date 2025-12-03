@@ -6,7 +6,8 @@ INCLUDE Irvine32.inc
     cookiePower DWORD 1 ; Cookies per Click
     cookiePowerPrice DWORD 10 ; Price for Upgrading Cookie Power
     autoCookie DWORD 0 ; Auto Cookies per Second
-    autoCookiePrice DWORD 50 ; Price for Auto Cookie Generator
+    autoCookie1Price DWORD 50 ; Price for Auto Cookie Generator 1
+    autoCookie2Price DWORD 100 ; Price for Auto Cookie Generator 2
     
     ; Timer Variables
     lastTime DWORD 0 ; Last time auto cookies were added
@@ -21,7 +22,8 @@ INCLUDE Irvine32.inc
     cookiePowerMsg BYTE "Cookies Power: ", 0
     cookiePowerPriceMsg BYTE "[1] Buy Cookie Power: ", 0
     autoCookieMsg BYTE "Auto Cookies: ", 0
-    autoCookiePriceMsg BYTE "[2] Buy Auto Cookie: ", 0
+    autoCookie1PriceMsg BYTE "[2] Buy Auto Cookie 1 (+5): ", 0
+    autoCookie2PriceMsg BYTE "[3] Buy Auto Cookie 2 (+10): ", 0
     controlMsg BYTE "[Spacebar] to add cookie, [Q] Quit Game", 0
     
     ; For clearing lines
@@ -107,10 +109,19 @@ skipAutoAdd:
     call WriteString
     call Crlf
 
-    ; Display auto cookie price
-    mov edx, OFFSET autoCookiePriceMsg
+    ; Display auto cookie 1 price
+    mov edx, OFFSET autoCookie1PriceMsg
     call WriteString
-    mov eax, autoCookiePrice
+    mov eax, autoCookie1Price
+    call WriteDec
+    mov edx, OFFSET clearLine
+    call WriteString
+    call Crlf
+
+    ; Display auto cookie 2 price
+    mov edx, OFFSET autoCookie2PriceMsg
+    call WriteString
+    mov eax, autoCookie2Price
     call WriteDec
     mov edx, OFFSET clearLine
     call WriteString
@@ -143,9 +154,13 @@ skipDisplay:
     cmp al, '1'
     je buyCookiePower
 
-    ; If user presses '2', buy auto cookie
+    ; If user presses '2', buy auto cookie 1
     cmp al, '2'
-    je buyAutoCookie
+    je buyAutoCookie1
+
+    ; If user presses '3', buy auto cookie 2
+    cmp al, '3'
+    je buyAutoCookie2
 
     ; If user presses spacebar, add cookies
     cmp al, ' '
@@ -178,23 +193,46 @@ buyCookiePower:
     
     jmp gameLoop
 
-buyAutoCookie:
+buyAutoCookie1:
     ; Check if user has enough cookies
     mov eax, cookieCount
-    cmp eax, autoCookiePrice
+    cmp eax, autoCookie1Price
     jl gameLoop  ; Not enough cookies, go back to game loop
     
     ; Subtract the price from cookieCount
-    mov eax, autoCookiePrice
+    mov eax, autoCookie1Price
     sub cookieCount, eax
     
     ; Add 5 to autoCookie
     add autoCookie, 5
     
-    ; Double the autoCookiePrice
-    mov eax, autoCookiePrice
+    ; Double the autoCookie1Price
+    mov eax, autoCookie1Price
     shl eax, 1  ; Left shift by 1 = multiply by 2
-    mov autoCookiePrice, eax
+    mov autoCookie1Price, eax
+    
+    ; Mark for redraw
+    mov needsRedraw, 1
+    
+    jmp gameLoop
+
+buyAutoCookie2:
+    ; Check if user has enough cookies
+    mov eax, cookieCount
+    cmp eax, autoCookie2Price
+    jl gameLoop  ; Not enough cookies, go back to game loop
+    
+    ; Subtract the price from cookieCount
+    mov eax, autoCookie2Price
+    sub cookieCount, eax
+    
+    ; Add 10 to autoCookie
+    add autoCookie, 10
+    
+    ; Double the autoCookie2Price
+    mov eax, autoCookie2Price
+    shl eax, 1  ; Left shift by 1 = multiply by 2
+    mov autoCookie2Price, eax
     
     ; Mark for redraw
     mov needsRedraw, 1
