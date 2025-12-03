@@ -12,6 +12,9 @@ INCLUDE Irvine32.inc
     lastTime DWORD 0 ; Last time auto cookies were added
     currentTime DWORD 0 ; Current time
     autoInterval DWORD 10000 ; 10 seconds in milliseconds
+    
+    ; Display flag
+    needsRedraw BYTE 1 ; 1 = needs redraw, 0 = no redraw needed
 
     ; Message Strings
     cookieMsg BYTE "Cookies: ", 0
@@ -32,6 +35,9 @@ main PROC
     ; Initialize the timer with current time
     call GetMseconds
     mov lastTime, eax
+    
+    ; Force initial display
+    mov needsRedraw, 1
 
 gameLoop:
     ; Check if 10 seconds have passed
@@ -51,8 +57,15 @@ gameLoop:
     ; Update lastTime
     mov eax, currentTime
     mov lastTime, eax
+    
+    ; Mark that we need to redraw
+    mov needsRedraw, 1
 
 skipAutoAdd:
+    ; Only redraw if needed
+    cmp needsRedraw, 1
+    jne skipDisplay
+    
     ; Move cursor to top-left (row 0, col 0)
     mov dh, 0
     mov dl, 0
@@ -107,7 +120,11 @@ skipAutoAdd:
     mov edx, OFFSET controlMsg
     call WriteString
     call Crlf
+    
+    ; Clear the redraw flag
+    mov needsRedraw, 0
 
+skipDisplay:
     ; Small delay to prevent excessive CPU usage
     mov eax, 50  ; 50ms delay
     call Delay
@@ -135,6 +152,7 @@ skipAutoAdd:
     jne gameLoop
     mov eax, cookiePower
     add cookieCount, eax
+    mov needsRedraw, 1  ; Mark for redraw
     jmp gameLoop
 
 buyCookiePower:
@@ -155,6 +173,9 @@ buyCookiePower:
     shl eax, 1  ; Left shift by 1 = multiply by 2
     mov cookiePowerPrice, eax
     
+    ; Mark for redraw
+    mov needsRedraw, 1
+    
     jmp gameLoop
 
 buyAutoCookie:
@@ -174,6 +195,9 @@ buyAutoCookie:
     mov eax, autoCookiePrice
     shl eax, 1  ; Left shift by 1 = multiply by 2
     mov autoCookiePrice, eax
+    
+    ; Mark for redraw
+    mov needsRedraw, 1
     
     jmp gameLoop
 
