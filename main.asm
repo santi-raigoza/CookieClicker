@@ -26,6 +26,7 @@ INCLUDE Irvine32.inc
     autoCookie1PriceMsg BYTE "[2] Buy Auto Cookie 1 (+5): ", 0
     autoCookie2PriceMsg BYTE "[3] Buy Auto Cookie 2 (+10): ", 0
     autoCookie3PriceMsg BYTE "[4] Buy Auto Cookie 3 (+15): ", 0
+    winGameMsg BYTE "[5] Buy Win Game Token: 4,294,967,296", 0
     controlMsg BYTE "[Spacebar] to add cookie, [Q] Quit Game", 0
     
     ; For clearing lines
@@ -134,6 +135,13 @@ skipAutoAdd:
     call WriteString
     mov eax, autoCookie3Price
     call WriteDec
+    mov edx, OFFSET clearLine
+    call WriteString
+    call Crlf
+
+    ; Display win game option
+    mov edx, OFFSET winGameMsg
+    call WriteString
     mov edx, OFFSET clearLine
     call WriteString
     call Crlf
