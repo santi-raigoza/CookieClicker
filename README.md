@@ -2,7 +2,7 @@
 Using MASM this cookie clicker was created by Jacob Woods and Santiago Raigoza
 
 RUNNING THE GAME:
-download main.asm and can run simply in visual studio code by clicking "start without debugging"
+download main.asm and can run simply in visual studio code by "building solution" and then "start without debugging"
 
 CONTROLS:
 Space bar,
