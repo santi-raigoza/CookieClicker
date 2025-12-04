@@ -5,8 +5,8 @@ RUNNING THE GAME:
 download main.asm and can run simply in visual studio code by clicking start without debugging
 
 CONTROLS:
-Space bar
-keys 1-6
+Space bar,
+keys 1-6,
 q
 
 PLAYING THE GAME:
