@@ -6,7 +6,7 @@ download main.asm and can run simply in visual studio code by "building solution
 
 CONTROLS:
 Space bar,
-keys 1-6,
+keys 1-5,
 q
 
 PLAYING THE GAME:
